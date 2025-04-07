@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.Linq;
+using System.Windows.Media;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -13,10 +14,10 @@ using Autodesk.Revit.UI.Selection;
 
 namespace PlanoPilotes
 {
-  [Transaction(TransactionMode.Manual)]
+    [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
-  public class SpotCoordinate : IExternalCommand
-  {
+    public class SpotCoordinate_PickObject : IExternalCommand
+    {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIDocument uidoc = commandData.Application.ActiveUIDocument;
@@ -24,16 +25,18 @@ namespace PlanoPilotes
 
             try
             {
+                Reference pilote = uidoc.Selection.PickObject(ObjectType.Element);
 
-                var pilote = ObtenerPilote(doc);
-                if (pilote == null)
-                    throw new Exception("No se encontró un pilote con el nombre Ø 0.60");
-
-                Face topFace = ObtenerCaraSuperior(pilote);
+                if (pilote != null)
+                {
+                    TaskDialog.Show("SELECCIÓN", "Ha seleccionado el elemento: " + pilote.ElementId.ToString());
+                }
+                Face topFace = ObtenerCaraSuperior(pilote,doc);
                 if (topFace == null)
                     throw new Exception("No se encontró la cara superior del pilote.");
 
-                BoundingBoxXYZ bbox = pilote.get_BoundingBox(null);
+                Element piloteElem = doc.GetElement(pilote);
+                BoundingBoxXYZ bbox = piloteElem.get_BoundingBox(null);
                 XYZ puntoSuperior = new XYZ((bbox.Min.X + bbox.Max.X) / 2, (bbox.Min.Y + bbox.Max.Y) / 2, bbox.Max.Z);
 
                 Reference faceReference = topFace.Reference;
@@ -50,28 +53,19 @@ namespace PlanoPilotes
 
                 CrearSpotDimension(doc, view, faceReference, punto);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                TaskDialog.Show("Error", ex.Message);
+                TaskDialog.Show("ERROR", e.Message);
+               
             }
             return Result.Succeeded;
         }
-
-
-        private FamilyInstance ObtenerPilote(Document doc)
+        private Face ObtenerCaraSuperior(Reference refe, Document doc)
         {
-            return new FilteredElementCollector(doc)
-                .OfCategory(BuiltInCategory.OST_StructuralFoundation)
-                .WhereElementIsNotElementType()
-                .Cast<FamilyInstance>()
-                .FirstOrDefault(x => x.Name == "0.60");
-        }
+            if (refe == null) return null;
 
-        
-
-        private  Face ObtenerCaraSuperior(FamilyInstance pilote)
-        {
-            if (pilote == null) return null;
+            //convierte la referencia en elemento
+            Element pilote = doc.GetElement(refe);
 
             // ¡IMPORTANTE! Activar ComputeReferences para obtener las referencias
             Options options = new Options { ComputeReferences = true };
@@ -96,11 +90,10 @@ namespace PlanoPilotes
                 }
             }
             return null;
-
         }
-
         private XYZ ObtenerCentroCara(Face topFace)
         {
+
             BoundingBoxUV bbox = topFace.GetBoundingBox();
             UV centroUV = (bbox.Min + bbox.Max) / 2;
             XYZ centroXYZ = topFace.Evaluate(centroUV);
@@ -109,12 +102,13 @@ namespace PlanoPilotes
 
         private SpotDimension CrearSpotDimension(Document doc, View view, Reference faceReference, XYZ point)
         {
-            using (Transaction tran = new Transaction(doc,"Crear Spot Dimension en Pilote"))
+            using (Transaction tran = new Transaction(doc, "Crear Spot Dimension en Pilote"))
             {
                 tran.Start();
 
                 //Definir desplazamineto visual de la cota 
-                XYZ offset = new XYZ(2,2,0);
+                XYZ offset = new XYZ(2, 2, 0);
+
 
                 //Crear la Spot Dimension
                 SpotDimension spotDim = doc.Create.NewSpotCoordinate(view, faceReference, point, point + offset, point + offset * 2, point + offset * 3, true);
@@ -124,5 +118,6 @@ namespace PlanoPilotes
                 return spotDim;
             }
         }
-  }
+    }
 }
+
