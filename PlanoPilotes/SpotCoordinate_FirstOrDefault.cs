@@ -15,7 +15,7 @@ namespace PlanoPilotes
 {
   [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
-  public class SpotCoordinate : IExternalCommand
+  public class SpotCoordinate_FirstOrDefault : IExternalCommand
   {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
