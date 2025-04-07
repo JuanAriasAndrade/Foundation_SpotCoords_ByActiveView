@@ -1,0 +1,10 @@
+# Carpeta de Visual Studio
+.vs/
+
+# Compilados y temporales
+bin/
+obj/
+*.user
+*.suo
+*.log
+*.cache

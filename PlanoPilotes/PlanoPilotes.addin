@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Command">
+		<Text>PlanoPilotes</Text>
+		<Description>Some description for JuanPrueba2</Description>
+		<Assembly>JuanPrueba2.dll</Assembly>
+		<FullClassName>PlanoPilotes.Command</FullClassName>
+		<RevitVersion>2023</RevitVersion>
+		<Optional>True</Optional>
+		<ClientId>611eb4da-4d52-4754-a5a6-5b257329afdd</ClientId>
+		<VendorId>Juan Arias</VendorId>
+		<VendorDescription>Juan Arias</VendorDescription>
+	</AddIn>
+	<AddIn Type="Application">
+		<Name>Application PlanoPilotes</Name>
+		<Assembly>PlanoPilotes.dll</Assembly>
+		<FullClassName>PlanoPilotes.App</FullClassName>
+		<RevitVersion>2023</RevitVersion>
+		<Optional>True</Optional>
+		<ClientId>0a7c13ed-79b4-415c-9371-7441d355ff3b</ClientId>
+		<VendorId>Juan Arias</VendorId>
+		<VendorDescription>Juan Arias</VendorDescription>
+	</AddIn>
+</RevitAddIns>
