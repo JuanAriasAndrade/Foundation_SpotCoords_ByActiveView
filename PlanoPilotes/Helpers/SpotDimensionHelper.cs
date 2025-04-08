@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace PlanoPilotes
+namespace PlanoPilotes.Helpers
 {
     public static class SpotDimensionHelper
     {
@@ -20,10 +20,15 @@ namespace PlanoPilotes
                 {
                     foreach (Face face in solid.Faces)
                     {
-                        XYZ normal = face.ComputeNormal(new UV(0.5, 0.5));
-                        if (Math.Round(normal.Z, 2) == 1)
+                        if (face is PlanarFace planarFace)
                         {
-                            return face;
+                            XYZ normal = planarFace.FaceNormal.Normalize();
+
+                            // Compara la normal con el eje Z positivo con una tolerancia de 0.01
+                            if (normal.IsAlmostEqualTo(XYZ.BasisZ, 0.01))
+                            {
+                                return planarFace;
+                            }
                         }
                     }
                 }
