@@ -1,4 +1,8 @@
-﻿using Autodesk.Revit.Attributes;
+﻿/* ## 📜 Licencia
+*Este script está disponible solo para fines educativos, de investigación o de experimentación personal.*
+*Su uso con fines comerciales está estrictamente prohibido bajo los términos de la licencia CC BY-NC 4.0.* */
+
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.UI;

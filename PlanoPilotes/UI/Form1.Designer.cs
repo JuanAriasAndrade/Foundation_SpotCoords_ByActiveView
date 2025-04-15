@@ -1,4 +1,8 @@
-﻿namespace PlanoPilotes.UI
+﻿/* ## 📜 Licencia
+*Este script está disponible solo para fines educativos, de investigación o de experimentación personal.*
+*Su uso con fines comerciales está estrictamente prohibido bajo los términos de la licencia CC BY-NC 4.0.* */
+
+namespace PlanoPilotes.UI
 {
     partial class Form1
     {
