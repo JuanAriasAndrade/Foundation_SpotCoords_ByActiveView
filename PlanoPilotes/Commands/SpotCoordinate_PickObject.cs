@@ -1,11 +1,12 @@
-﻿using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.UI;
-using System.Collections.Generic;
-using System;
-using Autodesk.Revit.Attributes;
 using PlanoPilotes.Helpers;
 using PlanoPilotes.UI;
+using System.Collections.Generic;
+using System;
+
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -16,12 +17,10 @@ public class SpotCoordinate_PickObject : IExternalCommand
         UIDocument uidoc = commandData.Application.ActiveUIDocument;
         Document doc = uidoc.Document;
 
-        // Lista de referencias a procesar
         IList<Reference> referenciasSeleccionadas = new List<Reference>();
 
         try
         {
-            // Mostrar el formulario y capturar la opción
             Form1 form = new Form1();
             form.ShowDialog();
 
@@ -33,7 +32,6 @@ public class SpotCoordinate_PickObject : IExternalCommand
                 return Result.Cancelled;
             }
 
-            // Obtener referencias según la opción seleccionada
             switch (opcion)
             {
                 case OpcionSeleccion.Individual:
@@ -60,15 +58,10 @@ public class SpotCoordinate_PickObject : IExternalCommand
                                 if (reference != null)
                                     referenciasSeleccionadas.Add(reference);
                             }
-                            catch
-                            {
-                                // evitar elementos mal referenciados
-                                continue;
-                            }
+                            catch { continue; }
                         }
                     }
                     break;
-
             }
 
             if (referenciasSeleccionadas.Count == 0)
@@ -77,43 +70,28 @@ public class SpotCoordinate_PickObject : IExternalCommand
                 return Result.Cancelled;
             }
 
-            int errores = 0; // contador de elementos omitidos
+            int errores = 0;
             View view = doc.ActiveView;
 
-            // Validar tipo de vista
             if (!(view is ViewPlan || view is ViewSection))
             {
                 TaskDialog.Show("Error", "Las Spot Dimensions solo pueden crearse en vistas de plano o sección.");
                 return Result.Failed;
             }
 
-            // Procesar cada referencia
             foreach (Reference piloteRef in referenciasSeleccionadas)
             {
                 if (piloteRef == null) continue;
 
                 Face topFace = SpotDimensionHelper.ObtenerCaraSuperior(piloteRef, doc);
-                if (topFace == null)
-                {
-                    errores++;
-                    continue;
-                }
+                if (topFace == null) { errores++; continue; }
 
                 XYZ punto = SpotDimensionHelper.ObtenerCentroCara(topFace);
-                if (topFace.Project(punto) == null)
-                {
-                    errores++;
-                    continue;
-                }
+                if (topFace.Project(punto) == null) { errores++; continue; }
 
                 Reference faceReference = topFace.Reference;
-                if (faceReference == null)
-                {
-                    errores++;
-                    continue;
-                }
+                if (faceReference == null) { errores++; continue; }
 
-                // Crear spot
                 SpotDimensionHelper.CrearSpotDimension(doc, view, faceReference, punto);
             }
 
@@ -131,3 +109,4 @@ public class SpotCoordinate_PickObject : IExternalCommand
         return Result.Succeeded;
     }
 }
+

@@ -57,5 +57,24 @@ namespace PlanoPilotes.UI
             OpcionElegida = OpcionSeleccion.VistaActual;
             this.Close();
         }
+
+        private ComboBox cmbTiposElementos;
+
+        public Form1(List<string> nombresTipos)
+        {
+            InitializeComponent();
+            cmbTiposElementos = new ComboBox
+            {
+                Location = new System.Drawing.Point(42, 100),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cmbTiposElementos.Items.Add("Todos");
+            cmbTiposElementos.Items.AddRange(nombresTipos.ToArray());
+            cmbTiposElementos.SelectedIndex = 0; // Por defecto, seleccionar "Todos"
+            this.Controls.Add(cmbTiposElementos);
+        }
+
+        public string TipoSeleccionado => cmbTiposElementos.SelectedItem.ToString();
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
+using System;
 using Autodesk.Revit.UI;
 
 namespace PlanoPilotes.Helpers
@@ -23,12 +23,8 @@ namespace PlanoPilotes.Helpers
                         if (face is PlanarFace planarFace)
                         {
                             XYZ normal = planarFace.FaceNormal.Normalize();
-
-                            // Compara la normal con el eje Z positivo con una tolerancia de 0.01
                             if (normal.IsAlmostEqualTo(XYZ.BasisZ, 0.01))
-                            {
                                 return planarFace;
-                            }
                         }
                     }
                 }
@@ -67,3 +63,4 @@ namespace PlanoPilotes.Helpers
         }
     }
 }
+
